@@ -1,0 +1,16 @@
+<resources>
+  <string name="app_name">Chat Messaging App</string>
+  <string name="count_initial_value">0</string>
+  <string name="button_label">Send</string>
+  <string name="toast_message">Hurray!</string>
+  <string name="compose_message_hint">Type a message here</string>
+  <string name="my_test_message">This is long message where TS will come in second line</string>
+  <string name="their_test_message">This is very very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo</string>
+  <string name="their_test_message_1">This is very very looooooooooooooooooooooooooooooooooooooo</string>
+  <string name="video_action">Video</string>
+  <string name="call_action">Call</string>
+  <string name="group_name">Group Name</string>
+  <string name="member_names">Member 1, Member 2…</string>
+  <string name="dummy_message_recipient">Bhavesh Mehra</string>
+  <string name="dummy_message_recipient_initials">BM</string>
+</resources>
