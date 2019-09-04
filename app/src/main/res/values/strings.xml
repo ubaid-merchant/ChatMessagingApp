@@ -4,9 +4,9 @@
   <string name="button_label">Send</string>
   <string name="toast_message">Hurray!</string>
   <string name="compose_message_hint">Type a message here</string>
-  <string name="my_test_message">This is long message where TS will come in second line</string>
-  <string name="their_test_message">This is very very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo</string>
-  <string name="their_test_message_1">This is very very looooooooooooooooooooooooooooooooooooooo</string>
+  <string name="my_test_message_dummy">This is long message where TS will come in second line</string>
+  <string name="their_test_message_dummy">This is very very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo</string>
+  <string name="their_test_message_dummy_1">This is very very looooooooooooooooooooooooooooooooooooooo</string>
   <string name="video_action">Video</string>
   <string name="call_action">Call</string>
   <string name="group_name">Group Name</string>

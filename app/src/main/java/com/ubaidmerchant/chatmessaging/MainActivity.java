@@ -1,15 +1,17 @@
 package com.ubaidmerchant.chatmessaging;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.ubaidmerchant.chatmessaging.adapter.MessageAdapter;
 import com.ubaidmerchant.chatmessaging.models.MemberDataModel;
@@ -23,10 +25,16 @@ public class MainActivity extends AppCompatActivity
     implements View.OnClickListener, MessageAdapter.MessageInteraction {
 
   private EditText edtComposeMessage;
-  private RecyclerView messagesView;
+  private RecyclerView rvMessages;
   private ImageView ivAddIcon;
   private ImageView ivVoiceIcon;
   private ImageView ivCameraIcon;
+  private ArrayList<MessageModel> messagesList = new ArrayList<>();
+  private String messageRecipient;
+  private String messageRecipientInitials;
+  private SimpleDateFormat sdFormat;
+  private String messageTime;
+  private MessageAdapter messageAdapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
     Toolbar toolbar = findViewById(R.id.toolbar);
     edtComposeMessage = findViewById(R.id.edtComposeMessage);
-    messagesView = findViewById(R.id.rvMessages);
+    rvMessages = findViewById(R.id.rvMessages);
     ivAddIcon = findViewById(R.id.ivAddIcon);
     ivVoiceIcon = findViewById(R.id.ivVoiceIcon);
     ivCameraIcon = findViewById(R.id.ivCameraIcon);
@@ -46,14 +54,23 @@ public class MainActivity extends AppCompatActivity
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    initOnClickListener();
+    initListener();
     setMessagesData();
   }
 
-  private void initOnClickListener() {
+  private void initListener() {
     ivAddIcon.setOnClickListener(this);
     ivVoiceIcon.setOnClickListener(this);
     ivCameraIcon.setOnClickListener(this);
+
+    edtComposeMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+      @Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+          sendMessage();
+        }
+        return false;
+      }
+    });
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,45 +86,51 @@ public class MainActivity extends AppCompatActivity
       case R.id.callAction:
         showToastMessage("Call Action Clicked!");
         break;
+      case android.R.id.home:
+        onBackPressed();
+        break;
     }
     return super.onOptionsItemSelected(item);
   }
 
   private void setMessagesData() {
-    ArrayList<MessageModel> messages = new ArrayList<>();
-    String messageRecipient = getString(R.string.dummy_message_recipient);
-    String messageRecipientInitials = getString(R.string.dummy_message_recipient_initials);
+    messageRecipient = getString(R.string.dummy_message_recipient);
+    messageRecipientInitials = getString(R.string.dummy_message_recipient_initials);
 
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-    String messageTime = sdf.format(Calendar.getInstance().getTime());
+    sdFormat = new SimpleDateFormat("HH:mm");
+    messageTime = sdFormat.format(Calendar.getInstance().getTime());
 
-    MessageModel myMsg = new MessageModel(getString(R.string.my_test_message),
-        new MemberDataModel(messageRecipient, getRandomColor()), true, messageTime,
-        messageRecipientInitials);
-    MessageModel theirMsg = new MessageModel(getString(R.string.their_test_message),
-        new MemberDataModel(messageRecipient, getRandomColor()), false, messageTime,
-        messageRecipientInitials);
-    MessageModel myMsg1 = new MessageModel(getString(R.string.my_test_message),
-        new MemberDataModel(messageRecipient, getRandomColor()), true, messageTime,
-        messageRecipientInitials);
-    MessageModel theirMsg1 = new MessageModel(getString(R.string.their_test_message_1),
-        new MemberDataModel(messageRecipient, getRandomColor()), false, messageTime,
-        messageRecipientInitials);
+    MessageModel myMsg = new MessageModel(getString(R.string.my_test_message_dummy),
+        new MemberDataModel(messageRecipient, getRandomColor()), true,
+        messageTime, messageRecipientInitials);
+    MessageModel theirMsg = new MessageModel(getString(R.string.their_test_message_dummy),
+        new MemberDataModel(messageRecipient, getRandomColor()), false,
+        messageTime, messageRecipientInitials);
+    MessageModel theirMsg1 = new MessageModel(getString(R.string.their_test_message_dummy_1),
+        new MemberDataModel(messageRecipient, getRandomColor()), false,
+        messageTime, messageRecipientInitials);
 
-    messages.add(myMsg);
-    messages.add(theirMsg);
-    messages.add(myMsg1);
-    messages.add(theirMsg1);
+    messagesList.add(myMsg);
+    messagesList.add(theirMsg);
+    messagesList.add(myMsg);
+    messagesList.add(theirMsg1);
 
-    MessageAdapter messageAdapter = new MessageAdapter(this, messages, this);
-    messagesView.setLayoutManager(new LinearLayoutManager(this));
-    messagesView.setAdapter(messageAdapter);
+    messageAdapter = new MessageAdapter(this, messagesList, this);
+    rvMessages.setAdapter(messageAdapter);
   }
 
-  public void sendMessage(View view) {
+  private void sendMessage() {
     String message = edtComposeMessage.getText().toString();
     if (message.length() > 0) {
+      messageTime = sdFormat.format(Calendar.getInstance().getTime());
+
+      MessageModel myMsg = new MessageModel(message,
+          new MemberDataModel(messageRecipient, getRandomColor()), true,
+          messageTime, messageRecipientInitials);
+      messagesList.add(myMsg);
+      messageAdapter.notifyDataSetChanged();
       edtComposeMessage.getText().clear();
+      rvMessages.scrollToPosition(messagesList.size() - 1);
     }
   }
 
@@ -134,12 +157,16 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
+  @Override public void onBackPressed() {
+    super.onBackPressed();
+  }
+
   private void showToastMessage(String message) {
     Toast.makeText(this, message, Toast.LENGTH_LONG).show();
   }
 
-  @Override public void onSmileyClicked(int position) {
-    showToastMessage("Smiley Clicked!");
+  @Override public void onMessageSmileyClicked(int position) {
+    showToastMessage("Message Smiley Clicked!");
   }
 }
 

@@ -40,10 +40,11 @@
 
   <LinearLayout
     android:id="@+id/llSmileys"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_above="@id/llRecipientMessage"
     android:layout_alignStart="@+id/tvMessageRecipient"
+    android:layout_alignTop="@+id/tvInitials"
     android:background="@drawable/smiley_layout_bg"
     android:orientation="horizontal"
     android:visibility="gone"
@@ -66,7 +67,7 @@
     android:layout_height="wrap_content"
     android:layout_below="@+id/tvMessageRecipient"
     android:layout_alignStart="@+id/tvMessageRecipient"
-    android:background="@drawable/their_message"
+    android:background="@drawable/their_message_bg"
     android:orientation="horizontal">
 
     <TextView
@@ -81,7 +82,7 @@
       android:paddingBottom="12dp"
       android:textColor="@color/white_color"
       android:textSize="18sp"
-      tools:text="How are you doing? This is a long message that should probably wrap." />
+      tools:text="@string/their_test_message_dummy" />
 
     <ImageView
       android:id="@+id/ivMessageSmiley"

@@ -22,20 +22,20 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
   private static final int VIEW_TYPE_MY_MESSAGE = 1;
   private static final int VIEW_TYPE_THEIR_MESSAGE = 2;
 
-  private List<MessageModel> messages;
+  private List<MessageModel> messagesList;
   private Context context;
   private MessageInteraction interaction;
 
   public MessageAdapter(Context context, List<MessageModel> messagesList,
       MessageInteraction interaction) {
     this.context = context;
-    this.messages = messagesList;
+    this.messagesList = messagesList;
     this.interaction = interaction;
   }
 
   @Override
   public int getItemViewType(int position) {
-    if (messages.get(position).isBelongsToCurrentUser()) {
+    if (messagesList.get(position).isBelongsToCurrentUser()) {
       return VIEW_TYPE_MY_MESSAGE;
     } else {
       return VIEW_TYPE_THEIR_MESSAGE;
@@ -47,14 +47,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     View view;
 
     if (viewType == VIEW_TYPE_THEIR_MESSAGE) { // for their_message layout
-      view = LayoutInflater.from(context)
-          .inflate(R.layout.their_message, parent, false);
-
+      view = LayoutInflater.from(context).inflate(R.layout.item_their_message, parent, false);
       return new TheirMessageViewHolder(view);
     } else { // for my_message layout
-      view = LayoutInflater.from(context)
-          .inflate(R.layout.my_message, parent, false);
-
+      view = LayoutInflater.from(context).inflate(R.layout.item_my_message, parent, false);
       return new MyMessageViewHolder(view);
     }
   }
@@ -62,47 +58,48 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
   @Override
   public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
     if (getItemViewType(position) == VIEW_TYPE_THEIR_MESSAGE) {
-      ((TheirMessageViewHolder) viewHolder).setTheirMessageDetails(messages.get(position));
+      ((TheirMessageViewHolder) viewHolder).setTheirMessageDetails(messagesList.get(position));
     } else {
-      ((MyMessageViewHolder) viewHolder).setMyMessageDetails(messages.get(position));
+      ((MyMessageViewHolder) viewHolder).setMyMessageDetails(messagesList.get(position));
     }
   }
 
   @Override public int getItemCount() {
-    return messages.size();
+    return messagesList.size();
   }
 
   class MyMessageViewHolder extends RecyclerView.ViewHolder {
-    private TextView messageBody;
-    private TextView messageTime;
+    private TextView tvMessageBody;
+    private TextView tvMessageTime;
 
     MyMessageViewHolder(@NonNull View itemView) {
       super(itemView);
-      messageBody = itemView.findViewById(R.id.tvMessageBody);
-      messageTime = itemView.findViewById(R.id.tvMessageTime);
+      tvMessageBody = itemView.findViewById(R.id.tvMessageBody);
+      tvMessageTime = itemView.findViewById(R.id.tvMessageTime);
     }
 
     private void setMyMessageDetails(MessageModel message) {
-      messageBody.setText(message.getText());
-      messageTime.setText(message.getTime());
+      tvMessageBody.setText(message.getText());
+      tvMessageTime.setText(message.getTime());
     }
   }
 
-  class TheirMessageViewHolder extends RecyclerView.ViewHolder {
-    private TextView initial;
-    private TextView name;
-    private TextView messageBody;
-    private TextView messageTime;
+  class TheirMessageViewHolder extends RecyclerView.ViewHolder
+      implements SmileyAdapter.SmileyInteraction {
+    private TextView tvInitial;
+    private TextView tvName;
+    private TextView tvMessageBody;
+    private TextView tvMessageTime;
     private ImageView ivMessageSmiley;
     private LinearLayout llSmileys;
     private RecyclerView rvSmileys;
 
     TheirMessageViewHolder(@NonNull View itemView) {
       super(itemView);
-      initial = itemView.findViewById(R.id.tvInitials);
-      name = itemView.findViewById(R.id.tvMessageRecipient);
-      messageBody = itemView.findViewById(R.id.tvMessageBody);
-      messageTime = itemView.findViewById(R.id.tvMessageTime);
+      tvInitial = itemView.findViewById(R.id.tvInitials);
+      tvName = itemView.findViewById(R.id.tvMessageRecipient);
+      tvMessageBody = itemView.findViewById(R.id.tvMessageBody);
+      tvMessageTime = itemView.findViewById(R.id.tvMessageTime);
       ivMessageSmiley = itemView.findViewById(R.id.ivMessageSmiley);
       llSmileys = itemView.findViewById(R.id.llSmileys);
       rvSmileys = itemView.findViewById(R.id.rvSmileys);
@@ -119,29 +116,33 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
       smileyList.add(context.getDrawable(R.drawable.step_3));
       smileyList.add(context.getDrawable(R.drawable.step_4));
 
-      SmileyAdapter smileyAdapter = new SmileyAdapter(context, smileyList);
+      SmileyAdapter smileyAdapter = new SmileyAdapter(context, smileyList, this);
       rvSmileys.setAdapter(smileyAdapter);
       llSmileys.setVisibility(View.VISIBLE);
     }
 
     private void setTheirMessageDetails(MessageModel message) {
-      name.setText(message.getMemberData().getName());
-      messageBody.setText(message.getText());
-      messageTime.setText(message.getTime());
-      initial.setText(message.getInitials());
-      GradientDrawable drawable = (GradientDrawable) initial.getBackground();
+      tvName.setText(message.getMemberData().getName());
+      tvMessageBody.setText(message.getText());
+      tvMessageTime.setText(message.getTime());
+      tvInitial.setText(message.getInitials());
+      GradientDrawable drawable = (GradientDrawable) tvInitial.getBackground();
       drawable.setColor(Color.parseColor(message.getMemberData().getColor()));
 
       ivMessageSmiley.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
           setSmileyData();
-          interaction.onSmileyClicked(getAdapterPosition());
+          interaction.onMessageSmileyClicked(getAdapterPosition());
         }
       });
+    }
+
+    @Override public void onSmileyClicked(int position) {
+      llSmileys.setVisibility(View.GONE);
     }
   }
 
   public interface MessageInteraction {
-    void onSmileyClicked(int position);
+    void onMessageSmileyClicked(int position);
   }
 }

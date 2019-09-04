@@ -24,11 +24,11 @@
     android:layout_height="wrap_content"
     android:layout_below="@id/tvMessageTime"
     android:layout_alignParentEnd="true"
-    android:background="@drawable/my_message"
+    android:background="@drawable/my_message_bg"
     android:elevation="2dp"
     android:padding="10dp"
     android:textColor="@color/black_color"
     android:textSize="16sp"
-    tools:text="@string/my_test_message" />
+    tools:text="@string/my_test_message_dummy" />
 
 </RelativeLayout>

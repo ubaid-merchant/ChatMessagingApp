@@ -14,10 +14,12 @@ import java.util.List;
 public class SmileyAdapter extends RecyclerView.Adapter<SmileyAdapter.SmileyViewHolder> {
   private List<Drawable> smileyList;
   private Context context;
+  private SmileyInteraction interaction;
 
-  public SmileyAdapter(Context context, List<Drawable> list) {
+  public SmileyAdapter(Context context, List<Drawable> list, SmileyInteraction interaction) {
     this.context = context;
     this.smileyList = list;
+    this.interaction = interaction;
   }
 
   @NonNull @Override
@@ -43,6 +45,15 @@ public class SmileyAdapter extends RecyclerView.Adapter<SmileyAdapter.SmileyView
     SmileyViewHolder(@NonNull View itemView) {
       super(itemView);
       ivSmiley = itemView.findViewById(R.id.ivSmiley);
+      ivSmiley.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          interaction.onSmileyClicked(getAdapterPosition());
+        }
+      });
     }
+  }
+
+  public interface SmileyInteraction {
+    void onSmileyClicked(int position);
   }
 }
